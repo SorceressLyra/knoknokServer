@@ -176,3 +176,6 @@ dist
 
 # vs code
 .vscode
+
+# Firebase
+serviceAccountKey.json

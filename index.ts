@@ -1,18 +1,42 @@
-Bun.serve({
-    fetch(req, server) {
-      server.upgrade(req, {
+import { Server } from "socket.io";
+import http from "http";
+import { getMessaging } from "firebase-admin/messaging";
+import { initializeFirebase } from "./config/firebase-config";
+
+const server = http.createServer();
+const io = new Server(server);
+
+// Initialize Firebase
+initializeFirebase();
+
+io.on("connection", (socket) => {
+  console.log("a user connected");
+
+  socket.on("knock", async (event) => {
+    console.log('Echoing knock event:', event);
+    console.log('Event type:', typeof event);
+    socket.emit("knock", event);
+
+    try {
+      const message = {
         data: {
-          createdAt: Date.now(),
-        }
-      });
-    }, // upgrade logic
-    websocket: {
-      message(ws, message) {
-          console.log(message);
-          ws.send(message);
-      }, // a message is received
-      open(ws) {}, // a socket is opened
-      close(ws, code, message) {}, // a socket is closed
-      drain(ws) {}, // the socket is ready to receive more data
-    },
+          eventData: JSON.stringify(event),
+        },
+        topic: 'knock'
+      };
+
+      const response = await getMessaging().send(message);
+      console.log('Successfully sent message:', response);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   });
+
+  socket.on("disconnect", (reason) => {
+    console.log("user disconnected: ", reason);
+  });
+});
+
+server.listen(3000, () => {
+  console.log("listening on *:3000");
+});
