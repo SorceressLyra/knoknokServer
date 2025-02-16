@@ -12,10 +12,33 @@ initializeFirebase();
 io.on("connection", (socket) => {
   console.log("a user connected");
 
+  socket.on("knock_reply", async (event) => {
+    console.log('Echoing knock event:', event);
+    console.log('Event type:', typeof event);
+
+    io.emit("knock_reply_broadcast", event);
+
+    try {
+      const message = {
+        data: { 
+          eventData: JSON.stringify(event),
+        },
+        topic: 'knock_reply'
+      };
+
+      const response = await getMessaging().send(message);
+      console.log('Successfully sent message:', response);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+
+  });
+
   socket.on("knock", async (event) => {
     console.log('Echoing knock event:', event);
     console.log('Event type:', typeof event);
-    socket.emit("knock", event);
+
+    io.emit("knock_broadcast", event);
 
     try {
       const message = {
