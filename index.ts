@@ -13,11 +13,9 @@ io.on("connection", (socket) => {
   console.log("a user connected");
 
   socket.on("knock_reply", async (event) => {
-    console.log('Echoing knock event:', event);
-    console.log('Event type:', typeof event);
+    socket.broadcast.emit("knock_reply_broadcast", event);
 
-    io.emit("knock_reply_broadcast", event);
-
+    //Firebase Cloud Messaging
     try {
       const message = {
         data: { 
@@ -35,11 +33,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("knock", async (event) => {
-    console.log('Echoing knock event:', event);
-    console.log('Event type:', typeof event);
 
-    io.emit("knock_broadcast", event);
+    socket.broadcast.emit("knock_broadcast", event);
 
+    //Firebase Cloud Messaging
     try {
       const message = {
         data: {
