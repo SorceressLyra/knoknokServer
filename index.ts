@@ -16,40 +16,14 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("knock_reply_broadcast", event);
 
     //Firebase Cloud Messaging
-    try {
-      const message = {
-        data: { 
-          eventData: JSON.stringify(event),
-        },
-        topic: 'knock_reply'
-      };
-
-      const response = await getMessaging().send(message);
-      console.log('Successfully sent message:', response);
-    } catch (error) {
-      console.error('Error sending message:', error);
-    }
-
+    firebaseCM('knock_reply', event);
   });
 
   socket.on("knock", async (event) => {
-
     socket.broadcast.emit("knock_broadcast", event);
 
     //Firebase Cloud Messaging
-    try {
-      const message = {
-        data: {
-          eventData: JSON.stringify(event),
-        },
-        topic: 'knock'
-      };
-
-      const response = await getMessaging().send(message);
-      console.log('Successfully sent message:', response);
-    } catch (error) {
-      console.error('Error sending message:', error);
-    }
+    firebaseCM('knock', event);
   });
 
   socket.on("disconnect", (reason) => {
@@ -60,3 +34,20 @@ io.on("connection", (socket) => {
 server.listen(3000, () => {
   console.log("listening on *:3000");
 });
+
+
+async function firebaseCM(topic: string, event: any) {
+  try {
+    const message = {
+      data: {
+        eventData: JSON.stringify(event),
+      },
+      topic: topic
+    };
+
+    const response = await getMessaging().send(message);
+    console.log('Successfully sent message:', response);
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+}
