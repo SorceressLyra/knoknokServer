@@ -9,25 +9,53 @@ const io = new Server(server);
 // Initialize Firebase
 initializeFirebase();
 
+class ConnectionUser {
+  name: string;
+  isMobile: boolean;
+  id: string;
+
+  constructor(name: string, isMobile: boolean, id: string) {
+    this.name = name;
+    this.isMobile = isMobile;
+    this.id = id;
+  }
+}
+let connectedUsers: ConnectionUser[] = [];
+
 io.on("connection", (socket) => {
   console.log("a user connected");
+
+  socket.on("register", (user: ConnectionUser) => {
+    console.log("register event received: ", user);
+    connectedUsers.push(user);
+
+    io.emit("connected_users", connectedUsers);
+  });
 
   socket.on("knock_send", async (event) => {
     console.log("knock event received: ", event);
 
-    if(event.isReply){
+    if (event.isReply) {
       socket.broadcast.emit(`knock_${event.sender}`, event);
     }
-    else{
+    else if (event.receiver === 'BROADCAST_ALL') {
       socket.broadcast.emit("knock", event);
     }
-    
+    else {
+      const receiver = connectedUsers.find((user) => user.name === event.receiver);
+      if (receiver) {
+        socket.to(receiver.id).emit("knock", event);
+      }
+    }
+
+
     //Firebase Cloud Messaging
     await firebaseCM('knock', event);
   });
 
   socket.on("disconnect", (reason) => {
-    console.log("user disconnected: ", reason);
+    connectedUsers = connectedUsers.filter((user) => user.id !== socket.id);
+    console.log(`${socket.id} user disconnected: `, reason);
   });
 });
 
