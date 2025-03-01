@@ -12,18 +12,18 @@ initializeFirebase();
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  socket.on("knock_reply", async (event) => {
-    socket.broadcast.emit("knock_reply_broadcast", event);
+  socket.on("knock_send", async (event) => {
+    console.log("knock event received: ", event);
 
+    if(event.isReply){
+      socket.broadcast.emit(`knock_${event.sender}`, event);
+    }
+    else{
+      socket.broadcast.emit("knock", event);
+    }
+    
     //Firebase Cloud Messaging
-    firebaseCM('knock_reply', event);
-  });
-
-  socket.on("knock", async (event) => {
-    socket.broadcast.emit("knock_broadcast", event);
-
-    //Firebase Cloud Messaging
-    firebaseCM('knock', event);
+    await firebaseCM('knock', event);
   });
 
   socket.on("disconnect", (reason) => {
