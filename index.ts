@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import http from "http";
 import { getMessaging } from "firebase-admin/messaging";
 import { initializeFirebase } from "./config/firebase-config";
+import type { ConnectionUser } from "./ConnectionUser";
 
 const server = http.createServer();
 const io = new Server(server);
@@ -9,17 +10,6 @@ const io = new Server(server);
 // Initialize Firebase
 initializeFirebase();
 
-class ConnectionUser {
-  name: string;
-  isMobile: boolean;
-  id: string;
-
-  constructor(name: string, isMobile: boolean, id: string) {
-    this.name = name;
-    this.isMobile = isMobile;
-    this.id = id;
-  }
-}
 let connectedUsers: ConnectionUser[] = [];
 
 io.on("connection", (socket) => {
