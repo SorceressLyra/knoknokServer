@@ -7,7 +7,15 @@ import path from "path";
 import fs from "fs";
 
 const server = http.createServer();
-const io = new Server(server);
+const io = new Server(server, {
+  pingTimeout: 60000,
+  pingInterval: 25000, 
+  cors: {
+    origin: "*", 
+    methods: ["GET", "POST"]
+  },
+  transports: ['websocket', 'polling']
+});
 
 // Set up static file serving for HTTP connections
 
