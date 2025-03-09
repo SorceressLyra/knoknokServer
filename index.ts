@@ -3,9 +3,68 @@ import http from "http";
 import { getMessaging } from "firebase-admin/messaging";
 import { initializeFirebase } from "./config/firebase-config";
 import type { ConnectionUser } from "./ConnectionUser";
+import path from "path";
+import fs from "fs";
 
 const server = http.createServer();
 const io = new Server(server);
+
+// Set up static file serving for HTTP connections
+
+// Basic HTML response for HTTP connections
+const staticHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KnoKnok Server</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .status {
+      padding: 10px;
+      background-color: #e6f7e6;
+      border-left: 4px solid #28a745;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Knoknok Server</h1>
+    <div class="status">
+      <p>✅ Server is running</p>
+      <p>Socket.IO is available for WebSocket connections</p>
+    </div>
+    <p>This is the Knoknok server that handles real-time communication between users.</p>
+    <p>Current time: ${new Date().toLocaleString()}</p>
+  </div>
+</body>
+</html>
+`;
+
+// Handle HTTP requests
+server.on("request", (req, res) => {
+  res.setHeader("Content-Type", "text/html");
+  res.writeHead(200);
+  res.end(staticHtml);
+});
 
 // Initialize Firebase
 initializeFirebase();
