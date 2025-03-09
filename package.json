@@ -3,11 +3,12 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun run index.ts"
+    "dev": "tsx index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/node": "^22.13.1"
+    "@types/node": "^22.13.1",
+    "tsx": "^4.19.3"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
