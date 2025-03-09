@@ -108,8 +108,18 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3000, () => {
-  console.log("listening on *:3000");
+// Read port from package.json or default to 3000
+const packageJsonPath = path.join(process.cwd(), 'package.json');
+let port = 3000;
+try {
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  port = packageJson.port || port;
+} catch (error) {
+  console.warn('Could not read port from package.json, using default port 3000');
+}
+
+server.listen(port, () => {
+  console.log(`listening on *:${port}`);
 });
 
 

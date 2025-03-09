@@ -2,6 +2,7 @@
   "name": "knoknokserver",
   "module": "index.ts",
   "type": "module",
+  "port": 8471,
   "scripts": {
     "dev": "tsx index.ts"
   },
