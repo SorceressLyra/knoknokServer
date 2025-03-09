@@ -5,7 +5,7 @@
   "port": 8471,
   "scripts": {
     "dev": "tsx index.ts",
-    "pm2-start": "pm2 start tsx --name 'knoknok-server' -- index.ts"
+    "pm2-start": "pm2 start tsx --name 'knoknok-server' -- index.ts --watch"
   },
   "devDependencies": {
     "@types/bun": "latest",
